@@ -37,7 +37,7 @@ public class Studentobj {
 	public void updcity(String city) {
 		 this.city=city;
 	 }
-	public void updname(int age) {
+	public void updage(int age) {
 		 this.age=age;
 	 }
 }

@@ -163,39 +163,39 @@ public class Studentclass {
     
     //update student details
     static void updatest() {
-    	System.out.println("==Details update Menu==");
-    	System.out.println("Enter the student id :");
-    	int id=sc.nextInt();
-    	sc.nextLine();
-    	boolean f=false;
+        System.out.println("==Details update Menu==");
+        System.out.println("Enter the student id:");
 
-    	Studentobj up = st.stream()
-    	        .filter(student -> student.getid() == id)
-    	        .findFirst()
-    	        .orElse(null);
-    	
-    	 System.out.println("Enter the updated name");
-    	    String upname = sc.nextLine();
+        int id = sc.nextInt();
+        sc.nextLine();
 
-    	    System.out.println("Enter the updated city");
-    	    String upcity = sc.nextLine();
+        Studentobj up = st.stream()
+            .filter(student -> student.getid() == id)
+            .findFirst()
+            .orElse(null);
 
-    	    System.out.println("Enter the updated age");
-    	    int upage = sc.nextInt();
-    	    sc.nextLine();
-    	    
-    	up.updname(upname);
-		up.updname(upcity);
-		up.updname(upage);
-		f=true;
-    	
-    	if(!f) {
-    		System.out.println("No record found for thids id - "+id);
-    	}else {
-    		System.out.println("Update Successfully");
-    	}
-    		
-	}
+        if (up == null) {
+            System.out.println("No record found for this id - " + id);
+            return;
+        }
+
+        System.out.println("Enter the updated name:");
+        String upname = sc.nextLine();
+
+        System.out.println("Enter the updated city:");
+        String upcity = sc.nextLine();
+
+        System.out.println("Enter the updated age:");
+        int upage = sc.nextInt();
+        sc.nextLine();
+
+        up.updname(upname);
+        up.updcity(upcity);
+        up.updage(upage);
+
+        System.out.println("Update successful");
+    }
+    
     static void deletest() {
     	System.out.println("==delete Menu==");
     	System.out.println("Enter the student id :");
