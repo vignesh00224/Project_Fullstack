@@ -1,220 +1,446 @@
 package Proj1;
 
+import java.io.*;
 import java.util.*;
-/*
- * Created by  : vignesh
- * Create Date : 23/09/2026
- * purpose 	   : Students detail add,update,delete,search and view. 
- * Object used :Studentobj
- */
 
 public class Studentclass {
 
-	static Scanner sc = new Scanner(System.in);
-	static LinkedList<Studentobj> st = new LinkedList<>();
-	
-	public static void main(String[] args) {
-
-		
-		int options;
-		
-		do {
-		
-			    System.out.println("==Main Menu==");
-			    System.out.println("1. Add Student");
-	            System.out.println("2. View Students");
-	            System.out.println("3. Search Student");
-	            System.out.println("4. Update Student");
-	            System.out.println("5. Delete Student");
-	            System.out.println("6. Exit");
-	            System.out.println("Please Choose the options : ");
-			 options=sc.nextInt();
-		
-	try {
-		switch(options) {
-		case 1:addst();
-               break;
-		case 2:ViewSt();
-        	   break;
-		case 3:Searchst();
-               break;
-		case 4:updatest();
-               break;
-		case 5:deletest();
-               break;
-		case 6:System.out.println("Application is closed thank you");
-        	  break;       
-		default:
-    		  System.out.println("Invalide option");       
-		}
-		
-	  }catch(Exception e) {
-			System.out.println("Error while Enter details please try agin");
-			 sc.nextLine();
-		  };
-		  
-	}while (options!=6);
-	 
-	}
-	
-	//add student details 
-	static void addst() {
-		System.out.println("==Student add Menu==");
-		System.out.println("Enter Student Id.No");
-		int id=sc.nextInt();
-		sc.nextLine();
-		System.out.println("Enter Name : ");
-		String name=sc.nextLine();
-		System.out.println("Enter age : ");
-		int  age=sc.nextInt();
-		sc.nextLine();
-		System.out.println("Enter City : ");
-		String city=sc.nextLine();
-		
-		
-		Studentobj student = new Studentobj (id, name, age, city);
-        st.add(student);
-        
-        System.out.println("Student added successfully");
-		
-	}
-    static void ViewSt() {
-    	System.out.println("==All students list Menu==");
-    	if (st.isEmpty()) {
-    	 System.out.println("There is no records.");
-    	 return;
-    	}
-    	//System.out.println(st);
-    	for(Studentobj vst: st) {
-    		System.out.println(vst);
-    	}
+    static Scanner sc = new Scanner(System.in);
+    static LinkedList<Studentobj> students = new LinkedList<>();
+    static HashSet<Integer> studentIds = new HashSet<>();
+    static final String FILE_NAME = "students.txt";
+    public static void main(String[] args) {
     	
-	}
-    
-    //Search student details
-    static void Searchst() {
-    	System.out.println("==Search Menu==");
-    	boolean f = false;
-    	
-    	System.out.println("1.id");
-    	System.out.println("2.age");
-    	System.out.println("3.name");
-    	System.out.println("3.city");
-    	System.out.println("Enter the search by option ");
-    	int i;
-    	int cnt;
-    do {	
-    	i=sc.nextInt();
-    	sc.nextLine();
-    	cnt=0;
-      switch (i) {
-      case 1:
-    	  System.out.println("Enter the ID : ");
-    	  int id=sc.nextInt();
-    	  for (Studentobj sts :st) {
-    		  if(sts.getid()== id) {
-    			  System.out.println(sts);
-    			  f = true;
-    		  }
-    	  }
-    	  break;
-      case 2:
-      	  System.out.println("Enter the age : ");
-      	  int age=sc.nextInt();
-      	  for (Studentobj sts :st) {
-      		  if(sts.getage()== age) {
-      			  System.out.println(sts);
-      			  f = true;
-      		  }
-      	  }
-      	  break;
-      case 3:
-      	  System.out.println("Enter the name : ");
-      	  String name=sc.nextLine();
-      	  for (Studentobj sts :st) {
-      		  if(sts.getname().equals(name)) {
-      			  System.out.println(sts);
-      			  f = true;
-      		  }
-      	  }
-      	  break;
-      case 4:
-      	  System.out.println("Enter the city : ");
-      	  String city=sc.nextLine();
-      	  for (Studentobj sts :st) {
-      		  if(sts.getcity().equals(city)) {
-      			  System.out.println(sts);
-      			  f = true;
-      		  }
-      	  }
-      	  break;
-      	  default:
-      		  System.out.println("Please Enter the correct option");
-      		  cnt=1;
-      }
-    
-    } while(cnt == 1);
-    
-      if (!f) {
-  		System.out.println("No data");
-  		}
-		
-	}
-    
-    //update student details
-    static void updatest() {
-        System.out.println("==Details update Menu==");
-        System.out.println("Enter the student id:");
+        loadStudentsFromFile();
+        int option;
+        do {
+            System.out.println();
+            System.out.println("========== Student Management System ==========");
+            System.out.println("1. Add Student");
+            System.out.println("2. View Students");
+            System.out.println("3. Search Student");
+            System.out.println("4. Update Student");
+            System.out.println("5. Delete Student");
+            System.out.println("6. Exit");
+            System.out.println("===============================================");
+            System.out.print("Please choose an option: ");
+            option = readInt();
 
-        int id = sc.nextInt();
-        sc.nextLine();
+            try {
+                switch (option) {
+                    case 1:
+                        addStudent();
+                        break;
+                    case 2:
+                        viewStudents();
+                        break;
+                    case 3:
+                        searchStudent();
+                        break;
+                    case 4:
+                        updateStudent();
+                        break;
+                    case 5:
+                        deleteStudent();
+                        break;
+                    case 6:
+                        saveStudentsToFile();
+                        System.out.println("Application is closed. Thank you!");
+                        break;
+                    default:
+                        System.out.println("Invalid option. Please choose 1-6.");
+                }
 
-        Studentobj up = st.stream()
-            .filter(student -> student.getid() == id)
-            .findFirst()
-            .orElse(null);
+            } catch (Exception e) {
+                System.out.println("Something went wrong: " + e.getMessage());
+            }
+        } while (option != 6);
 
-        if (up == null) {
-            System.out.println("No record found for this id - " + id);
+        sc.close();
+    }
+
+
+    // 1. ADD STUDENT
+
+    static void addStudent() {
+
+        System.out.println();
+        System.out.println("========== Add Student ==========");
+
+        int id;
+
+        while (true) {
+            System.out.print("Enter Student ID: ");
+            id = readInt();
+            // Duplicate ID validation
+            if (studentIds.contains(id)) {
+                System.out.println("ID already exists. Please enter another ID.");
+            } else if (id <= 0) {
+                System.out.println("ID must be greater than 0.");
+            } else {
+                break;
+            }
+        }
+
+        String name = readString("Enter Name: ");
+        int age;
+        while (true) {
+            System.out.print("Enter Age: ");
+            age = readInt();
+            if (age <= 0 || age > 120) {
+                System.out.println("Please enter a valid age.");
+            } else {
+                break;
+            }
+        }
+
+        String city = readString("Enter City: ");
+        Studentobj student =
+                new Studentobj(id, name, age, city);
+
+        students.add(student);
+        studentIds.add(id);
+
+        saveStudentsToFile();
+        System.out.println("Student added successfully.");
+    }
+
+
+    // 2. VIEW STUDENTS
+    static void viewStudents() {
+
+        System.out.println();
+        System.out.println("========== All Students ==========");
+        if (students.isEmpty()) {
+
+            System.out.println("There are no records.");
+            return;
+        }
+        // Enhanced for loop
+        for (Studentobj student : students) {
+
+            System.out.println(student);
+        }
+
+        System.out.println("Total Students: " + students.size());
+    }
+
+    // 3. SEARCH STUDENT
+
+    static void searchStudent() {
+
+        System.out.println();
+        System.out.println("========== Search Student ==========");
+        System.out.println("1. Search by ID");
+        System.out.println("2. Search by Age");
+        System.out.println("3. Search by Name");
+        System.out.println("4. Search by City");
+
+        System.out.print("Enter search option: ");
+
+        int option = readInt();
+        switch (option) {
+            case 1:
+                System.out.print("Enter ID: ");
+                int id = readInt();
+                boolean idFound = false;
+                for (Studentobj student : students) {
+                    if (student.getId() == id) {
+
+                        System.out.println(student);
+                        idFound = true;
+                        break;
+                    }
+                }
+                if (!idFound) {
+                    System.out.println("No student found with ID: " + id);
+                }
+                break;
+            case 2:
+                System.out.print("Enter Age: ");
+                int age = readInt();
+                boolean ageFound = false;
+                for (Studentobj student : students) {
+                    if (student.getAge() == age) {
+                        System.out.println(student);
+                        ageFound = true;
+                    }
+                }
+                if (!ageFound) {
+                    System.out.println("No student found with age: " + age);
+                }
+                break;
+
+
+            case 3:
+
+                String name = readString("Enter Name: ");
+                boolean nameFound = false;
+                students.stream()
+                        .filter(student ->
+                                student.getName()
+                                        .equalsIgnoreCase(name))
+                        .forEach(student -> {
+                            System.out.println(student);
+                        });
+                nameFound = students.stream()
+                        .anyMatch(student ->
+                                student.getName()
+                                        .equalsIgnoreCase(name));
+
+                if (!nameFound) {
+                    System.out.println("No student found with name: " + name);
+                }
+                break;
+
+
+            case 4:
+                String city = readString("Enter City: ");
+                boolean cityFound = false;
+                students.stream()
+                        .filter(student ->
+                                student.getCity()
+                                        .equalsIgnoreCase(city))
+                        .forEach(student -> {
+                            System.out.println(student);
+                        });
+                cityFound = students.stream()
+                        .anyMatch(student ->
+                                student.getCity()
+                                        .equalsIgnoreCase(city));
+                if (!cityFound) {
+                    System.out.println("No student found in city: " + city);
+                }
+                break;
+
+            default:
+
+                System.out.println("Invalid search option.");
+        }
+    }
+
+
+    // 4. UPDATE STUDENT
+
+    static void updateStudent() {
+
+        System.out.println();
+        System.out.println("========== Update Student ==========");
+
+        System.out.print("Enter Student ID: ");
+
+        int id = readInt();
+
+        // Stream API
+        Studentobj student = students.stream()
+                .filter(s -> s.getId() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (student == null) {
+
+            System.out.println(
+                    "No record found for ID: " + id);
+
             return;
         }
 
-        System.out.println("Enter the updated name:");
-        String upname = sc.nextLine();
+        System.out.println("Current details:");
+        System.out.println(student);
+        String updatedName =
+                readString("Enter updated name: ");
+        String updatedCity =
+                readString("Enter updated city: ");
+        int updatedAge;
 
-        System.out.println("Enter the updated city:");
-        String upcity = sc.nextLine();
+        while (true) {
+            System.out.print("Enter updated age: ");
+            updatedAge = readInt();
+            if (updatedAge <= 0 || updatedAge > 120) {
+                System.out.println("Please enter a valid age.");
+            } else {
+                break;
+            }
+        }
 
-        System.out.println("Enter the updated age:");
-        int upage = sc.nextInt();
+        student.updstd(
+                updatedName,
+                updatedCity,
+                updatedAge
+        );
+
+        // Save changes
+        saveStudentsToFile();
+        System.out.println("Student updated successfully.");
+    }
+
+
+    // 5. DELETE STUDENT
+
+    static void deleteStudent() {
+
+        System.out.println();
+        System.out.println("========== Delete Student ==========");
+
+        System.out.print("Enter Student ID: ");
+
+        int id = readInt();
+
+        // removeIf avoids ConcurrentModificationException
+        boolean removed = students.removeIf(
+                student -> student.getId() == id
+        );
+
+        if (removed) {
+
+            studentIds.remove(id);
+
+            saveStudentsToFile();
+
+            System.out.println(
+                    "Student deleted successfully.");
+
+        } else {
+
+            System.out.println(
+                    "No record found for ID: " + id);
+        }
+    }
+
+
+    // 6. FILE HANDLING - SAVE
+
+    static void saveStudentsToFile() {
+
+        try (
+                BufferedWriter writer =
+                        new BufferedWriter(
+                                new FileWriter(FILE_NAME))
+        ) {
+
+            for (Studentobj student : students) {
+
+                writer.write(
+                        student.getId()
+                                + ","
+                                + student.getName()
+                                + ","
+                                + student.getAge()
+                                + ","
+                                + student.getCity()
+                );
+
+                writer.newLine();
+            }
+
+        } catch (IOException e) {
+
+            System.out.println(
+                    "Error while saving students: "
+                            + e.getMessage());
+        }
+    }
+
+
+    // 7. FILE HANDLING - LOAD
+
+    static void loadStudentsFromFile() {
+
+        File file = new File(FILE_NAME);
+
+        if (!file.exists()) {
+
+            return;
+        }
+
+        try (
+                BufferedReader reader =
+                        new BufferedReader(
+                                new FileReader(FILE_NAME))
+        ) {
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+
+                String[] data = line.split(",", -1);
+
+                if (data.length != 4) {
+                    continue;
+                }
+
+                int id = Integer.parseInt(data[0]);
+                String name = data[1];
+                int age = Integer.parseInt(data[2]);
+                String city = data[3];
+
+                if (!studentIds.contains(id)) {
+
+                    Studentobj student =
+                            new Studentobj(
+                                    id,
+                                    name,
+                                    age,
+                                    city
+                            );
+
+                    students.add(student);
+                    studentIds.add(id);
+                }
+            }
+
+            System.out.println(
+                    students.size()
+                            + " student(s) loaded from file.");
+
+        } catch (IOException | NumberFormatException e) {
+
+            System.out.println(
+                    "Error while loading file: "
+                            + e.getMessage());
+        }
+    }
+
+
+    // 8. INPUT VALIDATION
+
+    static int readInt() {
+
+        while (!sc.hasNextInt()) {
+
+            System.out.println(
+                    "Invalid input. Please enter a number.");
+
+            sc.next();
+        }
+
+        int value = sc.nextInt();
+
         sc.nextLine();
 
-        up.updname(upname);
-        up.updcity(upcity);
-        up.updage(upage);
-
-        System.out.println("Update successful");
+        return value;
     }
-    
-    static void deletest() {
-    	System.out.println("==delete Menu==");
-    	System.out.println("Enter the student id :");
-    	int id=sc.nextInt();
-    	sc.nextLine();
-    	boolean f=false;
-    	for (Studentobj up:st)
-    	{
-    		if(up.getid()==id) {
-    			st.remove(up);
-    			f=true;
-    		}
-    	}
-    	if(!f) {
-    		System.out.println("No record found for thids id - "+id);
-    	}else {
-    		System.out.println("deleted Successfully");
-    	}
-    	
-    	
-	}
+
+
+    static String readString(String message) {
+
+        while (true) {
+
+            System.out.print(message);
+
+            String value = sc.nextLine().trim();
+
+            if (!value.isEmpty()) {
+
+                return value;
+            }
+
+            System.out.println(
+                    "Input cannot be empty.");
+        }
+    }
 }
